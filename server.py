@@ -1,6 +1,6 @@
 """Substack MCP Server — full Substack integration for Claude Code.
 
-28 tools across 3 phases:
+29 tools across 3 phases:
   Phase 1: Notes publishing + vault pipeline
   Phase 2: Post management + engagement
   Phase 3: Analytics + scale features
@@ -79,6 +79,12 @@ async def _get(url: str, pub: dict, params: dict | None = None) -> dict | list:
         r = await client.get(url, headers=_headers(pub), params=params, timeout=20)
         if r.status_code in (401, 403):
             return {"error": "Auth failed. Cookie may be expired. Re-extract from Chrome DevTools."}
+        if r.status_code >= 400:
+            try:
+                err_body = r.json()
+            except Exception:
+                err_body = r.text
+            return {"error": f"HTTP {r.status_code}", "response": err_body}
         r.raise_for_status()
         return r.json()
 
@@ -106,6 +112,12 @@ async def _put(url: str, pub: dict, body: dict | None = None) -> dict | list:
         r = await client.put(url, headers=_headers(pub), json=body or {}, timeout=30)
         if r.status_code in (401, 403):
             return {"error": "Auth failed. Cookie may be expired. Re-extract from Chrome DevTools."}
+        if r.status_code >= 400:
+            try:
+                err_body = r.json()
+            except Exception:
+                err_body = r.text
+            return {"error": f"HTTP {r.status_code}", "response": err_body}
         r.raise_for_status()
         return r.json()
 
@@ -394,7 +406,7 @@ def _parse_vault_drafts() -> list[dict]:
 
         # Detect section headers
         lower = chunk.lower()
-        if "## essay seeds" in lower or "## essay seeds" in lower:
+        if "## essay seeds" in lower or "## essay seed" in lower:
             current_section = "essay_seeds"
             # Remove the header line and continue with remaining text
             lines = chunk.split("\n")
@@ -581,13 +593,17 @@ async def create_draft(
     pm_body = md_to_prosemirror(body)
 
     profile = await _get(f"{GLOBAL_BASE}/user/profile/self", pub)
+    if isinstance(profile, dict) and "error" in profile:
+        return profile
     user_id = profile.get("id") if isinstance(profile, dict) else None
+    if not user_id:
+        return {"error": "Could not fetch user_id for draft_bylines. Check your session cookie."}
 
     payload = {
         "draft_title": title,
         "draft_subtitle": subtitle or None,
         "draft_body": json.dumps(pm_body),
-        "draft_bylines": [{"id": user_id, "is_guest": False}] if user_id else [],
+        "draft_bylines": [{"id": user_id, "is_guest": False}],
         "audience": audience,
         "should_send_email": False,
         "section_chosen": False,
@@ -1146,7 +1162,10 @@ publication: {pub['subdomain']}
 
     # Write to vault
     cfg = _load_config()
-    vault_base = Path(cfg.get("vault_drafts_path", "")).expanduser().parent.parent
+    vault_drafts_path = cfg.get("vault_drafts_path", "")
+    if not vault_drafts_path:
+        return {"error": "vault_drafts_path not configured. Set it in config.json to enable vault capture."}
+    vault_base = Path(vault_drafts_path).expanduser().parent.parent
     analytics_dir = vault_base / "Substack General"
     analytics_dir.mkdir(parents=True, exist_ok=True)
     out_path = analytics_dir / f"Analytics {today}.md"

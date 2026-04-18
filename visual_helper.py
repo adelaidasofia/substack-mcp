@@ -170,7 +170,10 @@ def rotate_figure(pillar: str) -> str:
     if not pillar_cfg.get("figure_rotation"):
         return ""
 
-    lib_path = Path(_figure_library_path(cfg))
+    raw_path = _figure_library_path(cfg)
+    if not raw_path:
+        return ""
+    lib_path = Path(raw_path).expanduser()
     if not lib_path.exists():
         return ""
     figures = sorted([f.name for f in lib_path.iterdir() if f.suffix.lower() in (".png", ".jpg", ".jpeg")])
@@ -292,6 +295,7 @@ def mark(lang: str, queue_number: str, note_id: str, pillar: str, figure_used: s
 def publish_visual(lang: str, png_path: str, note_body: str, publication_name: str | None = None):
     """Upload a PNG to Substack, create a note image attachment, publish a Note with it. Returns {note_id, url}."""
     import base64
+    import urllib.parse
     import urllib.request
     import urllib.error
 
