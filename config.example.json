@@ -1,0 +1,76 @@
+{
+  "publications": [
+    {
+      "name": "main",
+      "subdomain": "your-publication",
+      "cookie": "YOUR_SUBSTACK_SESSION_COOKIE_HERE"
+    },
+    {
+      "name": "secondary",
+      "subdomain": "your-second-publication",
+      "cookie": "YOUR_SECOND_SUBSTACK_SESSION_COOKIE_HERE"
+    }
+  ],
+  "default_publication": "main",
+  "vault_drafts_path": "~/your-vault/Substack Notes - Drafts.md",
+
+  "image_generator": {
+    "default": "pillow_local",
+
+    "pillow_local": {
+      "fonts_dir": "",
+      "output_dir": "/tmp"
+    },
+
+    "canva": {
+      "figure_library_path": "~/your-vault/images/figures/",
+      "pillars": {
+        "P1": {
+          "label": "Pillar 1 name",
+          "design_id": "YOUR_CANVA_DESIGN_ID",
+          "title": "Template title",
+          "has_figure": true,
+          "figure_rotation": true,
+          "edit_url": "https://www.canva.com/design/YOUR_CANVA_DESIGN_ID/edit",
+          "notes": "Template description"
+        },
+        "P2": {
+          "label": "Pillar 2 name",
+          "design_id": "YOUR_CANVA_DESIGN_ID",
+          "title": "Template title",
+          "has_figure": false,
+          "figure_rotation": false,
+          "edit_url": "https://www.canva.com/design/YOUR_CANVA_DESIGN_ID/edit",
+          "notes": "Template description"
+        },
+        "P3": {
+          "label": "Pillar 3 name",
+          "design_id": "YOUR_CANVA_DESIGN_ID",
+          "title": "Template title",
+          "has_figure": false,
+          "figure_rotation": false,
+          "edit_url": "https://www.canva.com/design/YOUR_CANVA_DESIGN_ID/edit",
+          "notes": "Template description"
+        }
+      }
+    },
+
+    "nano_banana": {
+      "output_dir": "/tmp",
+      "style_prompt": ""
+    },
+
+    "midjourney": {
+      "api_key": "YOUR_MIDJOURNEY_API_KEY",
+      "output_dir": "/tmp",
+      "aspect_ratio": "1:1"
+    },
+
+    "dalle": {
+      "api_key": "YOUR_OPENAI_API_KEY",
+      "model": "dall-e-3",
+      "size": "1024x1024",
+      "output_dir": "/tmp"
+    }
+  }
+}
