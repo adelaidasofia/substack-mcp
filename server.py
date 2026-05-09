@@ -763,7 +763,12 @@ async def list_published(
         result = await _get(
             f"{_pub_base(pub)}/post_management/published",
             pub,
-            params={"offset": "0", "limit": str(limit)},
+            params={
+                "offset": "0",
+                "limit": str(limit),
+                "order_by": "post_date",
+                "order_direction": "desc",
+            },
         )
     except Exception:
         # Fallback: use the posts endpoint
