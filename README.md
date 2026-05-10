@@ -207,6 +207,27 @@ python3 visual_helper.py rotate-figure --pillar P1
 6. **Multi-publication support.** Pass `publication="name"` to any tool to target a
    specific publication. Omit it to use `default_publication` from config.
 
+## Related MCPs
+
+Same author, same architecture pattern (FastMCP, draft+confirm on writes where applicable, vault auto-export, MIT):
+
+- [slack-mcp](https://github.com/adelaidasofia/slack-mcp) — multi-workspace Slack
+- [imessage-mcp](https://github.com/adelaidasofia/imessage-mcp) — macOS iMessage
+- [whatsapp-mcp](https://github.com/adelaidasofia/whatsapp-mcp) — WhatsApp via whatsmeow
+- [google-workspace-mcp](https://github.com/adelaidasofia/google-workspace-mcp) — Gmail / Calendar / Drive / Docs / Sheets
+- [apollo-mcp](https://github.com/adelaidasofia/apollo-mcp) — Apollo.io CRM + sequences
+- [luma-mcp](https://github.com/adelaidasofia/luma-mcp) — lu.ma events
+- [parse-mcp](https://github.com/adelaidasofia/parse-mcp) — markitdown / Docling / LlamaParse router
+- [rescuetime-mcp](https://github.com/adelaidasofia/rescuetime-mcp) — RescueTime productivity data
+- [graph-query-mcp](https://github.com/adelaidasofia/graph-query-mcp) — vault knowledge graph queries
+- [graph-autotagger-mcp](https://github.com/adelaidasofia/graph-autotagger-mcp) — wikilink suggestions from the graph
+- [investor-relations-mcp](https://github.com/adelaidasofia/investor-relations-mcp) — seed-raise pipeline tracker
+- [vault-sync-mcp](https://github.com/adelaidasofia/vault-sync-mcp) — bidirectional vault sync
+
 ## License
 
 MIT
+
+---
+
+Built by Adelaida Diaz-Roa. Full install or team version at [diazroa.com](https://diazroa.com).
