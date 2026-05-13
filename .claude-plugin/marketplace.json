@@ -1,0 +1,15 @@
+{
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
+  "name": "substack-mcp",
+  "owner": {
+    "name": "Mycelium AI",
+    "url": "https://myceliumai.co"
+  },
+  "plugins": [
+    {
+      "name": "substack-mcp",
+      "source": "./",
+      "description": "FastMCP server for Substack: publish Notes and posts, pull analytics, manage drafts, bridge Obsidian vault drafts to Substack, and generate visual cards with pluggable image generators."
+    }
+  ]
+}

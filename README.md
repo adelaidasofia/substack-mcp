@@ -56,12 +56,21 @@ substack__capture_analytics_to_vault  -- snapshot analytics to vault markdown
 
 ## Install
 
+Open Claude Code, paste:
+
+    /plugin marketplace add adelaidasofia/substack-mcp
+    /plugin install substack-mcp@substack-mcp
+
+<details><summary>Legacy install</summary>
+
 ```bash
 git clone https://github.com/adelaidasofia/substack-mcp
 cd substack-mcp
 pip3 install -r requirements.txt
 python3 -c "import server; print('OK')"
 ```
+
+</details>
 
 ## Configuration
 
