@@ -1,0 +1,57 @@
+{
+  "manifest_version": "0.4",
+  "name": "substack-mcp",
+  "display_name": "FastMCP server for Substack \u2014 publish Notes and posts, pull analytics, manage dr",
+  "version": "0.1.0",
+  "description": "FastMCP server for Substack \u2014 publish Notes and posts, pull analytics, manage drafts, pluggable image generators, and bridge Obsidian vault drafts to Substack.",
+  "author": {
+    "name": "Adelaida Diaz-Roa",
+    "url": "https://github.com/adelaidasofia"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adelaidasofia/substack-mcp.git"
+  },
+  "homepage": "https://github.com/adelaidasofia/substack-mcp",
+  "documentation": "https://github.com/adelaidasofia/substack-mcp#readme",
+  "support": "https://github.com/adelaidasofia/substack-mcp/issues",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "fastmcp",
+    "substack"
+  ],
+  "server": {
+    "type": "python",
+    "entry_point": "server.py",
+    "mcp_config": {
+      "command": "python3",
+      "args": [
+        "${__dirname}/server.py"
+      ],
+      "env": {
+        "SUBSTACK_SID_COOKIE": "${user_config.substack_sid_cookie}"
+      }
+    }
+  },
+  "tools_generated": true,
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ]
+  },
+  "user_config": {
+    "substack_sid_cookie": {
+      "type": "string",
+      "title": "Substack session cookie",
+      "description": "Auth cookie extracted via browser dev tools",
+      "required": true,
+      "sensitive": true
+    }
+  }
+}
