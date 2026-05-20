@@ -16,6 +16,7 @@
       "transport": {
         "type": "stdio"
       },
+      "fileSha256": "71324ded08db3e6d4b2d0bf3037687a9817ba19978ac3be62c0389eb690ccffb",
       "environmentVariables": [
         {
           "name": "SUBSTACK_SID_COOKIE",
