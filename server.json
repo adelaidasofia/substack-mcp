@@ -11,12 +11,12 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/adelaidasofia/substack-mcp/releases/latest/download/substack-mcp.mcpb",
+      "identifier": "https://github.com/adelaidasofia/substack-mcp/releases/download/v0.1.0/substack-mcp.mcpb",
       "version": "0.1.0",
       "transport": {
         "type": "stdio"
       },
-      "fileSha256": "71324ded08db3e6d4b2d0bf3037687a9817ba19978ac3be62c0389eb690ccffb",
+      "fileSha256": "d4b0d291dd5ba589ddf599a90063b81522be2c1562be905a16b11face5bb3b18",
       "environmentVariables": [
         {
           "name": "SUBSTACK_SID_COOKIE",
