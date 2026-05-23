@@ -1,5 +1,20 @@
 # substack-mcp
 
+
+<!-- mycelium-badges:start -->
+
+<p>
+  <a href="https://github.com/adelaidasofia/substack-mcp/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/adelaidasofia/substack-mcp?color=blue"></a>
+  <a href="https://github.com/adelaidasofia/substack-mcp/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/adelaidasofia/substack-mcp?color=eab308"></a>
+  <a href="https://github.com/adelaidasofia/substack-mcp/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/adelaidasofia/substack-mcp"></a>
+  <a href="https://github.com/adelaidasofia/substack-mcp/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/adelaidasofia/substack-mcp"></a>
+  <a href="https://pypi.org/project/adelaidasofia-substack-mcp/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/adelaidasofia-substack-mcp?color=blue&label=pypi"></a>
+  <a href="https://pypi.org/project/adelaidasofia-substack-mcp/"><img alt="PyPI downloads" src="https://img.shields.io/pypi/dm/adelaidasofia-substack-mcp?color=blue&label=downloads"></a>
+  <a href="https://myceliumai.co"><img alt="Built by Mycelium AI" src="https://img.shields.io/badge/built_by-Mycelium_AI-15B89A"></a>
+</p>
+
+<!-- mycelium-badges:end -->
+
 FastMCP server for Substack: publish Notes and posts, pull analytics, manage drafts, bridge Obsidian vault drafts to Substack, and generate visual cards with pluggable image generators.
 
 ## Quick reference
