@@ -14,11 +14,24 @@ import os
 import re
 from datetime import datetime, date
 from pathlib import Path
+from urllib.parse import urlparse
 
 import httpx
 from fastmcp import FastMCP
+from mycelium_security import UnsafeURL, assert_public_ip, sanitize_or_raise
 
 from prosemirror import md_to_prosemirror, md_to_note_body
+
+
+# SSRF hardening (MYC-101): every outbound URL passes through _validate_url
+# before any of the _get/_post/_put/_delete/_post_form helpers fire. Returns
+# the safe URL string or raises UnsafeURL (callers convert to {"error": ...}
+# so the never-raises contract of the fetch helpers is preserved).
+def _validate_url(url: str) -> str:
+    safe = sanitize_or_raise(url)
+    host = urlparse(safe).hostname or ""
+    assert_public_ip(host)
+    return safe
 
 # ---------------------------------------------------------------------------
 # Server init
@@ -75,7 +88,11 @@ def _headers(pub: dict) -> dict:
 
 async def _get(url: str, pub: dict, params: dict | None = None) -> dict | list:
     """Authenticated GET."""
-    async with httpx.AsyncClient() as client:
+    try:
+        url = _validate_url(url)
+    except UnsafeURL as exc:
+        return {"error": f"refused (SSRF): {exc}"}
+    async with httpx.AsyncClient(follow_redirects=False) as client:
         r = await client.get(url, headers=_headers(pub), params=params, timeout=20)
         if r.status_code in (401, 403):
             return {"error": "Auth failed. Cookie may be expired. Re-extract from Chrome DevTools."}
@@ -91,7 +108,11 @@ async def _get(url: str, pub: dict, params: dict | None = None) -> dict | list:
 
 async def _post(url: str, pub: dict, body: dict | None = None) -> dict | list:
     """Authenticated POST (JSON)."""
-    async with httpx.AsyncClient() as client:
+    try:
+        url = _validate_url(url)
+    except UnsafeURL as exc:
+        return {"error": f"refused (SSRF): {exc}"}
+    async with httpx.AsyncClient(follow_redirects=False) as client:
         r = await client.post(url, headers=_headers(pub), json=body or {}, timeout=30)
         if r.status_code in (401, 403):
             return {"error": "Auth failed. Cookie may be expired. Re-extract from Chrome DevTools."}
@@ -108,7 +129,11 @@ async def _post(url: str, pub: dict, body: dict | None = None) -> dict | list:
 
 async def _put(url: str, pub: dict, body: dict | None = None) -> dict | list:
     """Authenticated PUT (JSON)."""
-    async with httpx.AsyncClient() as client:
+    try:
+        url = _validate_url(url)
+    except UnsafeURL as exc:
+        return {"error": f"refused (SSRF): {exc}"}
+    async with httpx.AsyncClient(follow_redirects=False) as client:
         r = await client.put(url, headers=_headers(pub), json=body or {}, timeout=30)
         if r.status_code in (401, 403):
             return {"error": "Auth failed. Cookie may be expired. Re-extract from Chrome DevTools."}
@@ -124,7 +149,11 @@ async def _put(url: str, pub: dict, body: dict | None = None) -> dict | list:
 
 async def _delete(url: str, pub: dict) -> dict:
     """Authenticated DELETE."""
-    async with httpx.AsyncClient() as client:
+    try:
+        url = _validate_url(url)
+    except UnsafeURL as exc:
+        return {"error": f"refused (SSRF): {exc}"}
+    async with httpx.AsyncClient(follow_redirects=False) as client:
         r = await client.delete(url, headers=_headers(pub), timeout=20)
         if r.status_code in (401, 403):
             return {"error": "Auth failed. Cookie may be expired."}
@@ -134,9 +163,13 @@ async def _delete(url: str, pub: dict) -> dict:
 
 async def _post_form(url: str, pub: dict, data: dict) -> dict:
     """Authenticated POST with form data (for image upload)."""
+    try:
+        url = _validate_url(url)
+    except UnsafeURL as exc:
+        return {"error": f"refused (SSRF): {exc}"}
     headers = _headers(pub)
     headers["Content-Type"] = "application/x-www-form-urlencoded"
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(follow_redirects=False) as client:
         r = await client.post(url, headers=headers, data=data, timeout=60)
         if r.status_code in (401, 403):
             return {"error": "Auth failed. Cookie may be expired."}
