@@ -272,4 +272,4 @@ MIT
 
 ---
 
-Built by Adelaida Diaz-Roa. Full install or team version at [diazroa.com](https://diazroa.com).
+Built by [Mycelium AI](https://myceliumai.co). Full install or team version at [diazroa.com](https://diazroa.com).
