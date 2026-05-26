@@ -29,7 +29,7 @@ substack__get_dashboard days=30       -- subscriber + view KPIs
 substack__capture_analytics_to_vault  -- snapshot analytics to vault markdown
 ```
 
-## Tool inventory (29)
+## Tool inventory (30)
 
 ### Notes + vault pipeline
 
@@ -45,10 +45,11 @@ substack__capture_analytics_to_vault  -- snapshot analytics to vault markdown
 
 ### Post management
 
-- `create_draft(title, body, subtitle?, audience?, publication?)` -- create a post draft; body is markdown
-- `update_draft(draft_id, title?, body?, subtitle?, audience?, publication?)` -- edit an existing draft
-- `publish_post(draft_id, send_email?, audience?, publication?)` -- publish a draft live to subscribers
-- `schedule_post(draft_id, publish_at, publication?)` -- schedule a draft for future publication (ISO 8601)
+- `create_draft(title, body, subtitle?, audience?, publication?, section_id?)` -- create a post draft; body is markdown
+- `update_draft(draft_id, title?, body?, subtitle?, audience?, publication?, section_id?)` -- edit an existing draft
+- `publish_post(draft_id, send_email?, audience?, publication?, section_id?)` -- publish a draft live to subscribers
+- `schedule_post(draft_id, publish_at, publication?, section_id?)` -- schedule a draft for future publication (ISO 8601)
+- `list_sections(publication?)` -- list configured sections for a publication; required to publish on publications with sections
 - `list_drafts(limit?, publication?)` -- list unpublished drafts
 - `list_published(limit?, publication?)` -- list published posts with basic stats
 - `get_post(identifier, publication?)` -- get full post by slug or numeric ID
@@ -230,6 +231,22 @@ python3 visual_helper.py rotate-figure --pillar P1
 
 6. **Multi-publication support.** Pass `publication="name"` to any tool to target a
    specific publication. Omit it to use `default_publication` from config.
+
+7. **Sections are required to publish on publications that have them.** Substack
+   returns `HTTP 400: Please choose a section` from `publish_post` / `schedule_post`
+   when the draft hasn't been filed under a section. Look up section IDs with
+   `list_sections(publication="main")`, then pass `section_id=<id>` to either the
+   draft tool or the publish/schedule tool:
+
+   ```
+   list_sections                             # → [{id: 12345, name: "Essays", slug: "essays", ...}, ...]
+   create_draft title=... body=... section_id=12345
+   # or, for an existing draft:
+   publish_post draft_id=987654 section_id=12345
+   ```
+
+   `publish_post` / `schedule_post` patch the draft before publishing, so a single
+   call is enough.
 
 ## Related MCPs
 

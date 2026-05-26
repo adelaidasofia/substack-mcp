@@ -2,7 +2,7 @@
   "manifest_version": "0.4",
   "name": "substack-mcp",
   "display_name": "FastMCP server for Substack \u2014 publish Notes and posts, pull analytics, manage dr",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "FastMCP server for Substack \u2014 publish Notes and posts, pull analytics, manage drafts, pluggable image generators, and bridge Obsidian vault drafts to Substack.",
   "author": {
     "name": "adelaidasofia",

@@ -3,7 +3,7 @@
   "name": "io.github.adelaidasofia/substack-mcp",
   "title": "FastMCP server for Substack \u2014 publish Notes and posts, pull analytics, manage dr",
   "description": "FastMCP server for Substack \u2014 publish Notes and posts, pull analytics, manage drafts, pluggable\u2026",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": {
     "url": "https://github.com/adelaidasofia/substack-mcp",
     "source": "github"
@@ -11,12 +11,12 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/adelaidasofia/substack-mcp/releases/download/v0.1.0/substack-mcp.mcpb",
-      "version": "0.1.0",
+      "identifier": "https://github.com/adelaidasofia/substack-mcp/releases/download/v0.2.0/substack-mcp.mcpb",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },
-      "fileSha256": "d4b0d291dd5ba589ddf599a90063b81522be2c1562be905a16b11face5bb3b18",
+      "fileSha256": "698bd02c01e8ac3baa4da2635f5ad57d720f51c66c067d73d010d155a091562c",
       "environmentVariables": [
         {
           "name": "SUBSTACK_SID_COOKIE",

@@ -220,6 +220,29 @@ async def list_publications() -> list[dict]:
 
 
 @mcp.tool()
+async def list_sections(publication: str | None = None) -> list[dict]:
+    """List the sections configured for a publication.
+
+    Publications that have sections require every post to be filed under
+    one before publishing (the API returns "Please choose a section"
+    otherwise). Use the returned `id` as `section_id` in create_draft /
+    update_draft / publish_post / schedule_post.
+
+    Args:
+        publication: Publication name from config (default: default_publication)
+
+    Returns:
+        List of {id, name, slug, description, ...} for each section.
+        Empty list if the publication has no sections configured.
+    """
+    pub = _get_pub(publication)
+    result = await _get(f"{_pub_base(pub)}/publication/sections", pub)
+    if isinstance(result, dict) and "error" in result:
+        return [result]
+    return result if isinstance(result, list) else []
+
+
+@mcp.tool()
 async def publish_note(
     text: str,
     publication: str | None = None,
@@ -612,6 +635,7 @@ async def create_draft(
     subtitle: str = "",
     audience: str = "everyone",
     publication: str | None = None,
+    section_id: int | None = None,
 ) -> dict:
     """Create a post draft. Body accepts markdown (auto-converted to Substack format).
 
@@ -621,6 +645,9 @@ async def create_draft(
         subtitle: Optional subtitle
         audience: "everyone", "only_paid", "founding", "only_free"
         publication: Publication name from config
+        section_id: Optional Substack section ID. Required to publish on
+            publications that have sections configured. Look up the right
+            ID via list_sections(publication).
     """
     pub = _get_pub(publication)
     pm_body = md_to_prosemirror(body)
@@ -645,11 +672,24 @@ async def create_draft(
     result = await _post(f"{_pub_base(pub)}/drafts", pub, payload)
     if isinstance(result, dict) and "error" in result:
         return result
+    draft_id = result.get("id")
+
+    # Substack's POST /drafts silently ignores section_id / draft_section_id
+    # in the create payload. Setting the section requires a follow-up PUT.
+    if section_id is not None and draft_id is not None:
+        patch = await _put(
+            f"{_pub_base(pub)}/drafts/{draft_id}",
+            pub,
+            {"draft_section_id": section_id, "section_chosen": True},
+        )
+        if isinstance(patch, dict) and "error" in patch:
+            return patch
+
     return {
         "status": "draft_created",
-        "draft_id": result.get("id"),
+        "draft_id": draft_id,
         "title": title,
-        "edit_url": f"https://{pub['subdomain']}.substack.com/publish/post/{result.get('id')}",
+        "edit_url": f"https://{pub['subdomain']}.substack.com/publish/post/{draft_id}",
     }
 
 
@@ -661,6 +701,7 @@ async def update_draft(
     subtitle: str | None = None,
     audience: str = "everyone",
     publication: str | None = None,
+    section_id: int | None = None,
 ) -> dict:
     """Update an existing draft.
 
@@ -671,6 +712,9 @@ async def update_draft(
         subtitle: New subtitle (optional)
         audience: "everyone", "only_paid", "founding", "only_free"
         publication: Publication name from config
+        section_id: Optional Substack section ID. Required to publish on
+            publications that have sections configured. Look up the right
+            ID via list_sections(publication).
     """
     pub = _get_pub(publication)
     payload = {}
@@ -682,6 +726,9 @@ async def update_draft(
         payload["draft_body"] = json.dumps(md_to_prosemirror(body))
     if audience:
         payload["audience"] = audience
+    if section_id is not None:
+        payload["draft_section_id"] = section_id
+        payload["section_chosen"] = True
 
     result = await _put(f"{_pub_base(pub)}/drafts/{draft_id}", pub, payload)
     if isinstance(result, dict) and "error" in result:
@@ -695,6 +742,7 @@ async def publish_post(
     send_email: bool = True,
     audience: str = "everyone",
     publication: str | None = None,
+    section_id: int | None = None,
 ) -> dict:
     """Publish a draft post live to subscribers.
 
@@ -703,8 +751,21 @@ async def publish_post(
         send_email: Whether to email subscribers (default true)
         audience: "everyone", "only_paid", "founding", "only_free"
         publication: Publication name from config
+        section_id: Optional Substack section ID. Required on publications
+            that have sections configured (otherwise the API returns
+            "Please choose a section"). When set, the draft is patched to
+            point at this section before publishing. Look up the right ID
+            via list_sections(publication).
     """
     pub = _get_pub(publication)
+    if section_id is not None:
+        patch = await _put(
+            f"{_pub_base(pub)}/drafts/{draft_id}",
+            pub,
+            {"draft_section_id": section_id, "section_chosen": True},
+        )
+        if isinstance(patch, dict) and "error" in patch:
+            return patch
     payload = {
         "send": send_email,
         "share_automatically": False,
@@ -727,6 +788,7 @@ async def schedule_post(
     draft_id: int,
     publish_at: str,
     publication: str | None = None,
+    section_id: int | None = None,
 ) -> dict:
     """Schedule a draft for future publication.
 
@@ -734,8 +796,20 @@ async def schedule_post(
         draft_id: The draft ID to schedule
         publish_at: ISO 8601 datetime (e.g., "2026-04-20T14:00:00.000Z")
         publication: Publication name from config
+        section_id: Optional Substack section ID. Required on publications
+            that have sections configured. When set, the draft is patched
+            to point at this section before scheduling. Look up the right
+            ID via list_sections(publication).
     """
     pub = _get_pub(publication)
+    if section_id is not None:
+        patch = await _put(
+            f"{_pub_base(pub)}/drafts/{draft_id}",
+            pub,
+            {"draft_section_id": section_id, "section_chosen": True},
+        )
+        if isinstance(patch, dict) and "error" in patch:
+            return patch
     payload = {"post_date": publish_at}
     result = await _post(f"{_pub_base(pub)}/drafts/{draft_id}/schedule", pub, payload)
     if isinstance(result, dict) and "error" in result:
