@@ -1,4 +1,4 @@
-fastmcp>=3.4.5
+fastmcp>=3.4.6
 httpx>=0.28.1
 Pillow>=12.3.0
 # SSRF hardening for outbound Substack API fetch (MYC-101).
